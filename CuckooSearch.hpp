@@ -16,7 +16,7 @@ void cuckoo_search()
 {
     int number_of_nests = 10;
     double pa = 0.25;   // prawdopodobienstwo odrzucenia gniazda
-    int max_generation = 1000;
+    int max_generation = 500;
 
     Schedule sch(generate_random_tree());
     vector<Schedule> nests(number_of_nests, sch);
@@ -31,7 +31,7 @@ void cuckoo_search()
 
     best.to_string_matrix();
 
-    while (best.get_max_delay() > 8) {
+    while (max_generation > 0) {
         Schedule cuckoo = best;
 
         for (int l = 0; l < levy_flight(); l++) {
@@ -61,8 +61,6 @@ void cuckoo_search()
 
         max_generation--;
     }
-   // best.to_string_matrix();
-   // cout << endl;
     best.remove_empty_slots();
     cout << "Rozwiazanie koncowe max_delay = "
          << best.get_max_delay() << endl;

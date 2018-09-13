@@ -9,10 +9,12 @@
 class Schedule
 {
     vector<Hop> hops;   // wektor tylko time slot
-    array<vector<Hop>, 2> matrix;    // macierz channel / time slot
+    array<vector<Hop>, 3> matrix;    // macierz channel / time slot
                                      // z gory zakladamy 2 kanaly
 public:
-    Schedule(vector<Hop> h): hops(h) { matrix[0] = hops; matrix[1].resize(hops.size()); }
+    Schedule(vector<Hop> h): hops(h) { matrix[0] = hops;
+                                       matrix[1].resize(hops.size());
+                                       matrix[2].resize(hops.size()); }
     void mix_hops();
     void replace_hops(int pos1, int pos2);
     int count_delay(int path_id);   // time slot
@@ -49,15 +51,18 @@ void Schedule::replace_hops(int pos1, int pos2)
 
     /* jesli "nowe" wezly moga nadawac jednoczesnie z wezlami,
        ktore do tej pory nadawaly ze "starymi" wezlami */
-    if (can_parallel(matrix[i1][j1], matrix[(i2+1)%2][j2]) and
-            can_parallel(matrix[i2][j2], matrix[(i1+1)%2][j1]) ) {
+    if (can_parallel(matrix[i1][j1], matrix[(i2+1)%3][j2]) and
+            can_parallel(matrix[i1][j1], matrix[(i2+2)%3][j2]) and
+            can_parallel(matrix[i2][j2], matrix[(i1+1)%3][j1]) and
+            can_parallel(matrix[i2][j2], matrix[(i1+2)%3][j1])) {
 
         swap(matrix[i1][j1], matrix[i2][j2]); // mozna je zamienic
     }
     else {  /* w przeciwnym wypadku zamieniaja sie cale "kolumny", czyli wylosowane wezly
             i te, ktore z nimi nadaja jednoczesnie */
         swap(matrix[i1][j1], matrix[i1][j2]);
-        swap(matrix[i2][j2], matrix[i2][j1]);
+        swap(matrix[(i1+1)%3][j1], matrix[(i1+1)%3][j2]);
+        swap(matrix[(i1+2)%3][j1], matrix[(i1+2)%3][j2]);
     }
 }
 
@@ -88,6 +93,13 @@ int Schedule::count_delay(int path_id)
                                                h.get_node_id() == path.get_node(n).get_id()); });
 
                 pos[n] = it[n] - matrix[1].begin();
+            }
+            if (it[n] == matrix[1].end()) {
+                it[n] = find_if(matrix[2].begin(), matrix[2].end(),
+                                 [&](Hop& h){ return (h.get_path_id() == path_id and
+                                               h.get_node_id() == path.get_node(n).get_id()); });
+
+                pos[n] = it[n] - matrix[2].begin();
             }
     }
 
@@ -130,7 +142,7 @@ int Schedule::get_energy()
     int count_empty_slots = 0;
 
     for (int h = 0; h < hops.size(); h++) {
-        if (matrix[0][h].get_id() == 0 and matrix[1][h].get_id() == 0)
+        if (matrix[0][h].get_id() == 0 and matrix[1][h].get_id() == 0 and matrix[2][h].get_id() == 0)
             count_empty_slots++;
     }
 
@@ -144,9 +156,10 @@ void Schedule::remove_empty_slots()
     int it = hops.size();
     int pos = 0;
     while (it > 0) {
-        if (matrix[0][pos].get_id() == 0 and matrix[1][pos].get_id() == 0) {
+        if (matrix[0][pos].get_id() == 0 and matrix[1][pos].get_id() == 0 and matrix[2][pos].get_id() == 0) {
             matrix[0].erase(matrix[0].begin()+pos);
             matrix[1].erase(matrix[1].begin()+pos);
+            matrix[2].erase(matrix[2].begin()+pos);
         }
         else {
             pos++;
@@ -189,32 +202,24 @@ void Schedule::to_string_matrix()
     shift_up();
 
     for (int i = 0; i < matrix[0].size(); i++) {
-        if (matrix[1][i].to_string_hop().size() > 5) {
-                for (int j = 5; j < matrix[1][i].to_string_hop().size(); j++)
-                    cout << " ";
-        }
-        cout << matrix[0][i].to_string_hop();
-        cout << " ";
+        if (matrix[0][i].get_id() == 0)
+            cout << "      ";
+        else cout << matrix[0][i].to_string_hop() << " ";
     }
     cout << endl;
-
     for (int i = 0; i < matrix[1].size(); i++) {
-        if (matrix[1][i].get_id() != 0) {
-            if (matrix[0][i].to_string_hop().size() > 5) {
-                for (int j = 5; j < matrix[0][i].to_string_hop().size(); j++)
-                    cout << " ";
-            }
-            cout << matrix[1][i].to_string_hop();
-        }
-        else {
-            for (int k = 0; k < matrix[0][i].to_string_hop().size(); k++)
-                cout << " ";
-        }
-        cout << " ";
+        if (matrix[1][i].get_id() == 0)
+            cout << "      ";
+        else cout << matrix[1][i].to_string_hop() << " ";
+    }
+    cout << endl;
+    for (int i = 0; i < matrix[2].size(); i++) {
+        if (matrix[2][i].get_id() == 0)
+            cout << "      ";
+        else cout << matrix[2][i].to_string_hop() << " ";
     }
     cout << endl;
 }
-
 
 void Schedule::save_to_file()
 {
@@ -259,10 +264,13 @@ void Schedule::save_to_file()
 
 void Schedule::shift_up()   // jesli jednoczenie nadaje jeden wezel i wyswietla sie w dolnym
 {                              //  wierszu macierzy, to umieszcza je na gorze
-    for (int m = 0; m < hops.size(); m++) {
-        if (matrix[0][m].get_id() == 0 and matrix[1][m].get_id() != 0) {
+    for (int m = 0; m < matrix[0].size(); m++) {
+        if (matrix[0][m].get_id() == 0 and matrix[1][m].get_id() != 0)
             swap(matrix[0][m], matrix[1][m]);
-        }
+        if (matrix[1][m].get_id() == 0 and matrix[2][m].get_id() != 0)
+            swap(matrix[1][m], matrix[2][m]);
+        if (matrix[0][m].get_id() == 0 and matrix[1][m].get_id() != 0)
+            swap(matrix[0][m], matrix[1][m]);
     }
 }
 
