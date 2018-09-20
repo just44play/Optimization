@@ -1,11 +1,7 @@
 #pragma once
-#include <cmath>
+#include <time.h>
 #include "Schedule.hpp"
 #include "TreeGeneration.hpp"
-
-double threshold = 10000;
-double threshold_factor = 0.95;
-int iter = 1000;
 
 double acceptance_condition(int energy, int new_energy, double thres)
 {
@@ -17,6 +13,9 @@ double acceptance_condition(int energy, int new_energy, double thres)
 
 void threshold_accepting()
 {
+    double threshold = 10000;
+    double threshold_factor = 0.95;
+   // int iter = 1000;
 
    // Schedule current_solution(generate_tree_from_file());
     Schedule current_solution(generate_random_tree());
@@ -29,7 +28,8 @@ void threshold_accepting()
 
     Schedule best = current_solution;
 
-    while (iter > 0) {
+    clock_t start = clock();
+    while ( (clock() - start)/CLOCKS_PER_SEC <= 15) {
         Schedule new_solution = current_solution;
 
         int pos1 = random_num(0, new_solution.size_of_matrix()-1);
@@ -49,8 +49,9 @@ void threshold_accepting()
             best = current_solution;
 
         threshold *= threshold_factor;
-        iter--;
+      //  iter--;
     }
+
     best.remove_empty_slots();
     cout << "Rozwiazanie koncowe max_delay = " << best.get_max_delay() << endl;
     best.to_string_matrix();
