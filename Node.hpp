@@ -14,6 +14,3 @@ public:
     int get_id();
     int get_parent();
 };
-
-int Node::get_id() { return id; }
-int Node::get_parent() { return parent; }
