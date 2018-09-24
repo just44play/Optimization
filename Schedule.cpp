@@ -15,8 +15,8 @@ void Schedule::mix_hops()
 
 void Schedule::replace_hops(int pos1, int pos2)
 {
-    int i1 = pos1/hops.size(), j1 = pos1 % hops.size(); // na podst. pozycji ustala indeksy macierzy
-    int i2 = pos2/hops.size(), j2 = pos2 % hops.size();
+    int i1 = pos1/matrix[0].size(), j1 = pos1 % matrix[0].size(); // na podst. pozycji ustala indeksy macierzy
+    int i2 = pos2/matrix[0].size(), j2 = pos2 % matrix[0].size();
 
     /* jesli "nowe" wezly moga nadawac jednoczesnie z wezlami,
        ktore do tej pory nadawaly ze "starymi" wezlami */
@@ -108,7 +108,7 @@ int Schedule::get_max_delay()
 
 int Schedule::get_energy()
 {
-    int count_empty_slots = 0;
+   /* int count_empty_slots = 0;
 
     for (int h = 0; h < hops.size(); h++) {
         if (matrix[0][h].get_id() == 0 and matrix[1][h].get_id() == 0 and matrix[2][h].get_id() == 0)
@@ -116,13 +116,13 @@ int Schedule::get_energy()
     }
 
     int energy = get_max_delay() - count_empty_slots;   // do zmniejszenia calkowitej ilosci slotow
-
-    return energy;
+*/
+    return get_max_delay();
 }
 
 void Schedule::remove_empty_slots()
 {
-    int it = hops.size();
+    int it = matrix[0].size();
     int pos = 0;
     while (it > 0) {
         if (matrix[0][pos].get_id() == 0 and matrix[1][pos].get_id() == 0 and matrix[2][pos].get_id() == 0) {

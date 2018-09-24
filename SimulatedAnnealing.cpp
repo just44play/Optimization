@@ -43,7 +43,7 @@ void simulated_annealing()
                                    random_num_real(0, 1)) {
 
             current_solution = new_solution;
-           // current_solution.remove_empty_slots();
+            current_solution.remove_empty_slots();
         }
 
         if (current_solution.get_energy() < best.get_energy())
@@ -52,7 +52,7 @@ void simulated_annealing()
         temp *= 1 - cooling_rate;
         iter--;
     }
-    best.remove_empty_slots();
+   // best.remove_empty_slots();
     cout << "Rozwiazanie koncowe max_delay = " << best.get_max_delay() << endl;
     best.to_string_matrix();
 }
