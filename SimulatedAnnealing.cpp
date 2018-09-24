@@ -12,13 +12,12 @@ void simulated_annealing()
 {
     double temp = 10000;
     double cooling_rate = 0.01;
-  //  int iter = 1000;
+    int iter = 10000;
 
    // Schedule current_solution(generate_tree_from_file());
-    Schedule current_solution(generate_random_tree());
+    Schedule current_solution(generate_random_tree(7));
 
     current_solution.mix_hops();
-
 
     Schedule best = current_solution;
 
@@ -27,8 +26,9 @@ void simulated_annealing()
 
     best.to_string_matrix();
 
-    clock_t start = clock();
-    while ( (clock() - start)/CLOCKS_PER_SEC <= 10) {
+  // clock_t start = clock();
+   // while ( (clock() - start)/CLOCKS_PER_SEC <= 10) {
+    while (iter > 0) {
         Schedule new_solution = current_solution;
 
         int pos1 = random_num(0, new_solution.size_of_matrix()-1);
@@ -43,15 +43,16 @@ void simulated_annealing()
                                    random_num_real(0, 1)) {
 
             current_solution = new_solution;
+           // current_solution.remove_empty_slots();
         }
 
         if (current_solution.get_energy() < best.get_energy())
             best = current_solution;
 
         temp *= 1 - cooling_rate;
-       // iter--;
+        iter--;
     }
-    cout << "Rozwiazanie koncowe max_delay = " << best.get_max_delay() << endl;
     best.remove_empty_slots();
+    cout << "Rozwiazanie koncowe max_delay = " << best.get_max_delay() << endl;
     best.to_string_matrix();
 }

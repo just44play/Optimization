@@ -62,10 +62,9 @@ double random_num_real(double min, double max)
     return dis(gen);
 }
 
-vector<Hop> generate_random_tree()
+vector<Hop> generate_random_tree(int number_of_nodes)
 {
     srand(time(0));
-    int number_of_nodes = random_num(8,8);
     vector<Node> nodes;
 
     nodes.push_back(Node(1, 0));

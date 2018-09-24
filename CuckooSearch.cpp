@@ -16,7 +16,7 @@ void cuckoo_search()
     double pa = 0.25;   // prawdopodobienstwo odrzucenia gniazda
   //  int max_generation = 50;
 
-    Schedule sch(generate_random_tree());
+    Schedule sch(generate_random_tree(25));
     vector<Schedule> nests(number_of_nests, sch);
     for (int n = 0; n < number_of_nests; n++) { // populacja poczatkowa
         nests[n].mix_hops();

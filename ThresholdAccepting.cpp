@@ -15,7 +15,7 @@ void threshold_accepting()
    // int iter = 1000;
 
    // Schedule current_solution(generate_tree_from_file());
-    Schedule current_solution(generate_random_tree());
+    Schedule current_solution(generate_random_tree(25));
 
     current_solution.mix_hops();
     cout << "Rozwiazanie poczatkowe max_delay = "

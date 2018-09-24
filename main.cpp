@@ -2,13 +2,18 @@
 #include "SimulatedAnnealing.hpp"
 #include "ThresholdAccepting.hpp"
 #include "CuckooSearch.hpp"
+#include <string>
 using namespace std;
 
-int main()
+int main(int argc, char* argv[])
 {
-   simulated_annealing();
-   threshold_accepting();
-   cuckoo_search();
+    if (string(argv[1]) == "SA")
+        simulated_annealing();
+    else if (string(argv[1]) == "TA")
+        threshold_accepting();
+    else if (string(argv[1]) == "CS")
+        cuckoo_search();
+    else cout << "Niepoprawne parametry" << endl;
 
 
     return 0;

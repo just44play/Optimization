@@ -243,4 +243,4 @@ void Schedule::shift_up()   // jesli jednoczenie nadaje jeden wezel i wyswietla 
     }
 }
 
-int Schedule::size_of_matrix() { return matrix.size() * hops.size(); }
+int Schedule::size_of_matrix() { return matrix.size() * matrix[0].size(); }
