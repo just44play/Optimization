@@ -108,15 +108,6 @@ int Schedule::get_max_delay()
 
 int Schedule::get_energy()
 {
-   /* int count_empty_slots = 0;
-
-    for (int h = 0; h < hops.size(); h++) {
-        if (matrix[0][h].get_id() == 0 and matrix[1][h].get_id() == 0 and matrix[2][h].get_id() == 0)
-            count_empty_slots++;
-    }
-
-    int energy = get_max_delay() - count_empty_slots;   // do zmniejszenia calkowitej ilosci slotow
-*/
     return get_max_delay();
 }
 
@@ -203,30 +194,15 @@ void Schedule::save_to_file()
     shift_up();
 
     for (int i = 0; i < matrix[0].size(); i++) {
-        if (matrix[1][i].to_string_hop().size() > 5) {
-                for (int j = 5; j < matrix[1][i].to_string_hop().size(); j++)
-                    file << " ";
-        }
-        file << matrix[0][i].to_string_hop();
-        file << " ";
+        file << "Time Slot:" << i+1 << endl;
+        file << "1 : " << matrix[0][i].to_string_hop() << endl;
+        file << "2 : ";
+        if (matrix[1][i].get_id() != 0) file << matrix[1][i].to_string_hop();
+        file << endl;
+        file << "3 : ";
+        if (matrix[2][i].get_id() != 0) file << matrix[2][i].to_string_hop();
+        file << endl << endl;
     }
-    file << endl;
-
-    for (int i = 0; i < matrix[1].size(); i++) {
-        if (matrix[1][i].get_id() != 0) {
-            if (matrix[0][i].to_string_hop().size() > 5) {
-                for (int j = 5; j < matrix[0][i].to_string_hop().size(); j++)
-                    file << " ";
-            }
-            file << matrix[1][i].to_string_hop();
-        }
-        else {
-            for (int k = 0; k < matrix[0][i].to_string_hop().size(); k++)
-                file << " ";
-        }
-        file << " ";
-    }
-    file << endl;
 
     file.close();
 }

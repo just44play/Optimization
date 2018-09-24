@@ -5,8 +5,8 @@ int levy_flight()
     double r = random_num_real(0.001,5.000);
     double levy_dist = (double) 1/r;    // funkcja 1/x niezle przybliza rozklad Levy'ego
 
-    if (levy_dist < 1.0) return 1;
-    else if (levy_dist >= 1.0 and levy_dist <= 2.0) return 2;
+    if (levy_dist > 1.0) return 1;
+    else if (levy_dist >= 0.5 and levy_dist <= 1.0) return 2;
     else return 3;
 }
 
@@ -14,23 +14,36 @@ void cuckoo_search()
 {
     int number_of_nests = 10;
     double pa = 0.25;   // prawdopodobienstwo odrzucenia gniazda
-  //  int max_generation = 50;
+    int iter = 60000;
 
-    Schedule sch(generate_random_tree(25));
+    //Schedule sch(generate_random_tree(25));
+
+    Schedule sch(generate_tree_from_file());
+
     vector<Schedule> nests(number_of_nests, sch);
     for (int n = 0; n < number_of_nests; n++) { // populacja poczatkowa
         nests[n].mix_hops();
     }
+
+    sort(nests.begin(), nests.end(),
+         [](Schedule& a, Schedule& b){ return a.get_energy() < b.get_energy();});
 
     Schedule best = nests[0];
 
     cout << "Rozwiazanie poczatkowe max_delay = "
          << best.get_max_delay() << endl;
 
-    best.to_string_matrix();
+   // best.to_string_matrix();
 
-    clock_t start = clock();
-    while ( (clock() - start)/CLOCKS_PER_SEC <= 10) {
+  //  clock_t start = clock();
+  //  while ( (clock() - start)/CLOCKS_PER_SEC <= 10) {
+    while (iter > 0) {
+
+        if (iter % 1000 == 0) {
+            cout << iter << "..." << endl;
+            cout << best.get_energy() << endl << endl;
+        }
+
         Schedule cuckoo = best;
 
         for (int l = 0; l < levy_flight(); l++) {
@@ -41,8 +54,10 @@ void cuckoo_search()
 
         int current_nest_idx = random_num(0, number_of_nests-1);
 
-        if (cuckoo.get_energy() < nests[current_nest_idx].get_energy())
+        if (cuckoo.get_energy() < nests[current_nest_idx].get_energy()) {
             nests[current_nest_idx] = cuckoo;
+            nests[current_nest_idx].remove_empty_slots();
+        }
 
         sort(nests.begin(), nests.end(),
              [](Schedule& a, Schedule& b){ return a.get_energy() < b.get_energy();});
@@ -58,10 +73,10 @@ void cuckoo_search()
             }
         }
 
-       // max_generation--;
+        iter--;
     }
     best.remove_empty_slots();
     cout << "Rozwiazanie koncowe max_delay = "
          << best.get_max_delay() << endl;
-    best.to_string_matrix();
+  //  best.to_string_matrix();
 }
