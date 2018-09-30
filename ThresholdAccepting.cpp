@@ -10,9 +10,9 @@ double acceptance_condition(int energy, int new_energy, double thres)
 
 void threshold_accepting()
 {
-    double threshold = 1000;
-    double threshold_factor = 0.001;
-    int iter = 60000;
+    double threshold = 30000;
+    double threshold_factor = 0.05;
+    int iter = 10000;
 
     Schedule current_solution(generate_tree_from_file());
    // Schedule current_solution(generate_random_tree(25));
@@ -44,7 +44,7 @@ void threshold_accepting()
             current_solution = new_solution;
             current_solution.remove_empty_slots();
 
-            if (current_solution.get_energy() < best.get_energy())
+            if (current_solution.get_energy() <= best.get_energy())
                 best = current_solution;
 
         }
@@ -53,9 +53,7 @@ void threshold_accepting()
 
         if (iter % 1000 == 0) {
             cout << iter << "..." << endl;
-            cout << current_solution.get_energy() << endl;;
-            cout << best.get_energy() << endl;
-            cout << threshold << endl << endl;
+            cout << best.get_energy() << endl << endl;;
         }
 
         iter--;

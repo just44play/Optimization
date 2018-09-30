@@ -10,9 +10,9 @@ double acceptance_probability(int energy, int new_energy, double temperature)
 
 void simulated_annealing()
 {
-    double temp = 10000;
-    double cooling_rate = 0.01;
-    int iter = 60000;
+    double temp = 30000;
+    double cooling_rate = 0.05;
+    int iter = 10000;
 
     Schedule current_solution(generate_tree_from_file());
    // Schedule current_solution(generate_random_tree(25));
@@ -44,7 +44,7 @@ void simulated_annealing()
             current_solution = new_solution;
             current_solution.remove_empty_slots();
 
-            if (current_solution.get_energy() < best.get_energy())
+            if (current_solution.get_energy() <= best.get_energy())
                 best = current_solution;
         }
 

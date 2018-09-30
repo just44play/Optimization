@@ -15,6 +15,5 @@ int main(int argc, char* argv[])
         cuckoo_search();
     else cout << "Niepoprawne parametry" << endl;
 
-
     return 0;
 }
