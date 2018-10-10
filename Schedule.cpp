@@ -108,7 +108,9 @@ int Schedule::get_max_delay()
 
 int Schedule::get_energy()
 {
-    return get_max_delay();
+    int bonus = hops.size() - matrix[0].size();
+
+    return get_max_delay() - bonus;
 }
 
 void Schedule::remove_empty_slots()

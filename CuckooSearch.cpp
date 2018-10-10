@@ -3,9 +3,6 @@
 int levy_flight()
 {
     int levy_dist = random_num(1,100);
-  //  double r = random_num_real(0.001,1.0);
-  //  double levy_dist = (double) 1/r;    // funkcja 1/x niezle przybliza rozklad Levy'ego
-//  /  cout << "los = " << levy_dist << endl;
     if (levy_dist > 50) return 20;
     else if (levy_dist <= 50 and levy_dist >= 20) return 40;
     else return 60;
@@ -15,7 +12,7 @@ void cuckoo_search()
 {
     int number_of_nests = 9;
     double pa = 0.25;   // prawdopodobienstwo odrzucenia gniazda
-    int iter = 500;
+    int iter = 1000;
 
     //Schedule sch(generate_random_tree(25));
 
@@ -40,7 +37,7 @@ void cuckoo_search()
 
     while (iter > 0) {      
 
-        for (int n = 0; n < number_of_nests; n++) {
+        for (int n = 0; n < number_of_nests; n++) { // petla po wszystkich gniazdach
 
             Schedule cuckoo = nests[n];
 
@@ -98,4 +95,6 @@ void cuckoo_search()
     best.remove_empty_slots();
     cout << "Rozwiazanie koncowe max_delay = "
          << best.get_max_delay() << endl;
+
+    best.save_to_file();
 }

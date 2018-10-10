@@ -12,7 +12,7 @@ void simulated_annealing()
 {
     double temp = 30000;
     double cooling_rate = 0.05;
-    int iter = 10000;
+    int iter = 1000;
 
     Schedule current_solution(generate_tree_from_file());
    // Schedule current_solution(generate_random_tree(25));
@@ -24,9 +24,6 @@ void simulated_annealing()
     cout << "Rozwiazanie poczatkowe max_delay = "
             << best.get_max_delay() << endl;
 
-
-  // clock_t start = clock();
-   // while ( (clock() - start)/CLOCKS_PER_SEC <= 10) {
     while (iter > 0) {
         Schedule new_solution = current_solution;
 
@@ -58,5 +55,5 @@ void simulated_annealing()
         iter--;
     }
     cout << "Rozwiazanie koncowe max_delay = " << best.get_max_delay() << endl;
-   // best.to_string_matrix();
+    best.save_to_file();
 }

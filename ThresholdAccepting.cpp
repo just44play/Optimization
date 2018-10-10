@@ -12,7 +12,7 @@ void threshold_accepting()
 {
     double threshold = 30000;
     double threshold_factor = 0.05;
-    int iter = 10000;
+    int iter = 1000;
 
     Schedule current_solution(generate_tree_from_file());
    // Schedule current_solution(generate_random_tree(25));
@@ -24,10 +24,6 @@ void threshold_accepting()
     cout << "Rozwiazanie poczatkowe max_delay = "
             << best.get_max_delay() << endl;
 
-   // best.to_string_matrix();
-
-   // clock_t start = clock();
-  //  while ( (clock() - start)/CLOCKS_PER_SEC <= 15) {
      while (iter > 0) {
         Schedule new_solution = current_solution;
 
@@ -59,8 +55,6 @@ void threshold_accepting()
         iter--;
     }
 
-  //  best.remove_empty_slots();
     cout << "Rozwiazanie koncowe max_delay = " << best.get_max_delay() << endl;
-   // best.to_string_matrix();
     best.save_to_file();
 }
