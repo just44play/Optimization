@@ -10,14 +10,14 @@ double acceptance_probability(int energy, int new_energy, double temperature)
 
 void simulated_annealing()
 {
-    double temp = 30000;
+    double temp = 50000;
     double cooling_rate = 0.05;
-    int iter = 1000;
+    int iter = 10000;
 
     Schedule current_solution(generate_tree_from_file());
    // Schedule current_solution(generate_random_tree(25));
 
-    current_solution.mix_hops();
+   // current_solution.mix_hops();
 
     Schedule best = current_solution;
 
@@ -47,9 +47,14 @@ void simulated_annealing()
 
         temp *= 1 - cooling_rate;
 
-        if (iter % 1000 == 0) {
+      /*  if (iter % 1000 == 0) {
             cout << iter << "..." << endl;
-            cout << best.get_energy() << endl << endl;
+            cout << best.get_max_delay() << endl << endl;
+        }*/
+
+        if (iter == 9991 or iter == 9901 or iter == 9001 or iter == 1) {
+            cout << iter << "..." << endl;
+            cout << best.get_max_delay() << endl << endl;
         }
 
         iter--;

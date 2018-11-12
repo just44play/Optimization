@@ -1,5 +1,11 @@
 #include "CuckooSearch.hpp"
 
+/*int levy_flight()
+{
+    int rnd = random_num_real(0.0001, 0.9999);
+    return pow(rnd, -1.0/3.0);
+}*/
+
 int levy_flight()
 {
     int levy_dist = random_num(1,100);
@@ -12,7 +18,7 @@ void cuckoo_search()
 {
     int number_of_nests = 9;
     double pa = 0.25;   // prawdopodobienstwo odrzucenia gniazda
-    int iter = 1000;
+    int iter = 10000;
 
     //Schedule sch(generate_random_tree(25));
 
@@ -56,6 +62,11 @@ void cuckoo_search()
             if (cuckoo.get_energy() <= nests[random_nest_idx].get_energy()) {
                 nests[random_nest_idx] = cuckoo;
                 nests[random_nest_idx].remove_empty_slots();
+            }
+
+            if (iter % 1000 == 0) {
+                cout << iter << "..." << endl;
+                cout << best.get_max_delay() << endl << endl;
             }
 
             iter--;

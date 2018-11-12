@@ -12,12 +12,12 @@ void threshold_accepting()
 {
     double threshold = 30000;
     double threshold_factor = 0.05;
-    int iter = 1000;
+    int iter = 40000;
 
     Schedule current_solution(generate_tree_from_file());
    // Schedule current_solution(generate_random_tree(25));
 
-    current_solution.mix_hops();
+  //  current_solution.mix_hops();
 
     Schedule best = current_solution;
 
@@ -49,7 +49,7 @@ void threshold_accepting()
 
         if (iter % 1000 == 0) {
             cout << iter << "..." << endl;
-            cout << best.get_energy() << endl << endl;;
+            cout << best.get_max_delay() << endl << endl;;
         }
 
         iter--;
