@@ -1,111 +1,86 @@
 #include "CuckooSearch.hpp"
+#include <cmath>
 
-/*int levy_flight()
+double levy_flight()
 {
-    int rnd = random_num_real(0.0001, 0.9999);
+    double rnd = random_num_real(0.0001, 0.9999);
     return pow(rnd, -1.0/3.0);
-}*/
+}
 
-int levy_flight()
+void long_fly(Schedule& s)
 {
-    int levy_dist = random_num(1,100);
-    if (levy_dist > 50) return 20;
-    else if (levy_dist <= 50 and levy_dist >= 20) return 40;
-    else return 60;
+    int rnd = random_num(3,8);
+    while (rnd--) {
+        s.replace_hops();
+    }
+}
+
+Schedule get_best_nest(vector<Schedule>& n)
+{
+    sort(n.begin(), n.end(), [](Schedule& a, Schedule& b)
+                        { return a.get_energy() < b.get_energy(); });
+
+    return n[0];
 }
 
 void cuckoo_search()
 {
-    int number_of_nests = 9;
-    double pa = 0.25;   // prawdopodobienstwo odrzucenia gniazda
-    int iter = 10000;
+    int number_of_nests = 50;
+    int pa = 0.5 * number_of_nests;   // prawdopodobienstwo odrzucenia gniazda
+    int pc = 0.4 * number_of_nests;
+    int iter = 20000;
+    int iter_r;
 
-    //Schedule sch(generate_random_tree(25));
+    Schedule sch(generate_random_tree(number_of_nests));
 
-    Schedule sch(generate_tree_from_file());
+  //  Schedule sch(generate_tree_from_file());
 
     vector<Schedule> nests(number_of_nests, sch);
     for (int n = 0; n < number_of_nests; n++) { // populacja poczatkowa
         nests[n].mix_hops();
     }
 
-    Schedule best = nests[0];
-    for (int n = 1; n < number_of_nests; n++) {
-        if (nests[n].get_energy() < best.get_energy()) {
-            best = nests[n];
-            swap(nests[n], nests[0]);
-        }
-    }
-    best = nests[0];
+    Schedule best = get_best_nest(nests);
 
     cout << "Rozwiazanie poczatkowe max_delay = "
          << best.get_max_delay() << endl;
 
     while (iter > 0) {      
 
-        for (int n = 0; n < number_of_nests; n++) { // petla po wszystkich gniazdach
+        Schedule cuckoo = nests[random_num(0, pc)];
 
-            Schedule cuckoo = nests[n];
+        double l = levy_flight();
+        if (l > 2.0) {
+            long_fly(cuckoo);
+        }
+        else cuckoo.replace_hops();
 
-            int flight = levy_flight();
-
-            for (int l = 0; l < flight; l++) {
-                int pos1 = random_num(0, cuckoo.size_of_matrix()-1);
-                int pos2 = random_num(0, cuckoo.size_of_matrix()-1);
-                cuckoo.replace_hops(pos1, pos2);
-            }
-
-            int random_nest_idx = random_num(0, number_of_nests-1);
-            while (random_nest_idx == n)
-                random_nest_idx = random_num(0, number_of_nests-1);
-
-            if (cuckoo.get_energy() <= nests[random_nest_idx].get_energy()) {
-                nests[random_nest_idx] = cuckoo;
-                nests[random_nest_idx].remove_empty_slots();
-            }
-
-            if (iter % 1000 == 0) {
-                cout << iter << "..." << endl;
-                cout << best.get_max_delay() << endl << endl;
-            }
-
-            iter--;
+        int random_nest_index = random_num(0, number_of_nests-1);
+        if (nests[random_nest_index].get_energy() > cuckoo.get_energy()) {
+            nests[random_nest_index] = cuckoo;
+            nests[random_nest_index].remove_empty_slots();
         }
 
-        Schedule current_best = nests[0];
-        for (int n = 1; n < number_of_nests; n++) {
-            if (nests[n].get_energy() < current_best.get_energy()) {
-                current_best = nests[n];
-                swap(nests[n], nests[0]);
-            }
-        }
-        current_best = nests[0];
+        if (iter % number_of_nests == 0) {
+            for (int i = number_of_nests - pa; i < number_of_nests; i++)
+                long_fly(nests[i]);
 
-        for (int n = 1; n < number_of_nests; n++) {
-            if (random_num_real(0,1) < pa) {
-                int pos1 = random_num(0, number_of_nests-1);
-                int pos2 = random_num(0, number_of_nests-1);
-                nests[n].replace_hops(pos1, pos2);
-                nests[n].remove_empty_slots();
-            }
+            Schedule current_best = best;
+            current_best = get_best_nest(nests);
+            if (current_best.get_energy() < best.get_energy())
+                best = current_best;
         }
 
-        for (int n = 1; n < number_of_nests; n++) {
-            if (nests[n].get_energy() < current_best.get_energy()) {
-                current_best = nests[n];
-                swap(nests[n], nests[0]);
-            }
+        iter_r = 20000-iter;
+        if (iter_r%100 == 0 or iter_r == 10 or iter_r == 20 or iter_r == 30 or
+                iter_r == 40 or iter_r == 50 or iter_r == 60 or iter_r == 80) {
+            cout << 20000 - iter << "..." << endl;
+            cout << best.get_max_delay() << endl << endl;
         }
-        current_best = nests[0];
-
-        if (current_best.get_energy() < best.get_energy())
-            best = current_best;
 
         iter--;
     }
-    best.remove_empty_slots();
-    cout << "Rozwiazanie koncowe max_delay = "
-         << best.get_max_delay() << endl;
 
+    cout << "Rozwiazanie koncowe max_delay = " << best.get_max_delay() << endl;
     best.save_to_file();
 }

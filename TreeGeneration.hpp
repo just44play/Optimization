@@ -1,5 +1,6 @@
 #include "Schedule.hpp"
 
+void results_file(int iter, int value);
 vector<Hop> generate_tree_from_file();
 int random_num(int min, int max);
 double random_num_real(double min, double max);

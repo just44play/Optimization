@@ -10,14 +10,15 @@ double acceptance_condition(int energy, int new_energy, double thres)
 
 void threshold_accepting()
 {
-    double threshold = 30000;
+    double threshold = 25000;
     double threshold_factor = 0.05;
-    int iter = 40000;
+    int iter = 20000;
+    int iter_r;
 
-    Schedule current_solution(generate_tree_from_file());
-   // Schedule current_solution(generate_random_tree(25));
+   // Schedule current_solution(generate_tree_from_file());
+    Schedule current_solution(generate_random_tree(25));
 
-  //  current_solution.mix_hops();
+    current_solution.mix_hops();
 
     Schedule best = current_solution;
 
@@ -27,10 +28,7 @@ void threshold_accepting()
      while (iter > 0) {
         Schedule new_solution = current_solution;
 
-        int pos1 = random_num(0, new_solution.size_of_matrix()-1);
-        int pos2 = random_num(0, new_solution.size_of_matrix()-1);
-
-        new_solution.replace_hops(pos1, pos2);
+        new_solution.replace_hops();
 
         int current_energy = current_solution.get_energy();
         int neighbor_energy = new_solution.get_energy();
@@ -47,9 +45,12 @@ void threshold_accepting()
 
         threshold *= 1- threshold_factor;
 
-        if (iter % 1000 == 0) {
-            cout << iter << "..." << endl;
-            cout << best.get_max_delay() << endl << endl;;
+        iter_r = 20000-iter;
+        if (iter_r%100 == 0 or iter_r == 10 or iter_r == 20 or iter_r == 30 or
+                iter_r == 40 or iter_r == 50 or iter_r == 60 or iter_r == 80) {
+            cout << 20000 - iter << "..." << endl;
+            cout << best.get_max_delay() << endl << endl;
+            results_file(iter_r, best.get_max_delay());
         }
 
         iter--;

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <random>
 #include "Hop.hpp"
+#include "TreeGeneration.hpp"
 
 class Schedule
 {
@@ -17,7 +18,7 @@ public:
                                        matrix[1].resize(hops.size());
                                        matrix[2].resize(hops.size()); }
     void mix_hops();
-    void replace_hops(int pos1, int pos2);
+    void replace_hops();
     int count_delay(int path_id);   // time slot
     int get_max_delay();
     int get_energy();

@@ -8,42 +8,41 @@ void Schedule::mix_hops()
 
     shuffle(hops.begin(), hops.end(), gen);
 
-    for (int h = 0; h < hops.size(); h++) { // ustawia w gorym wierszu macierzy skoki losowo
+    for (int h = 0; h < hops.size(); h++) // ustawia w gorym wierszu macierzy skoki losowo
         matrix[0][h] = hops[h];
-    }
 }
 
-void Schedule::replace_hops(int pos1, int pos2)
+void Schedule::replace_hops()
 {
-    int i1 = pos1/matrix[0].size(), j1 = pos1 % matrix[0].size(); // na podst. pozycji ustala indeksy macierzy
-    int i2 = pos2/matrix[0].size(), j2 = pos2 % matrix[0].size();
+    while (true) {
+        int pos1 = random_num(0, size_of_matrix()-1);
+        int pos2 = random_num(0, size_of_matrix()-1);
 
-    /* jesli "nowe" wezly moga nadawac jednoczesnie z wezlami,
-       ktore do tej pory nadawaly ze "starymi" wezlami */
-    if (can_parallel(matrix[i1][j1], matrix[(i2+1)%3][j2]) and
-            can_parallel(matrix[i1][j1], matrix[(i2+2)%3][j2]) and
-            can_parallel(matrix[i2][j2], matrix[(i1+1)%3][j1]) and
-            can_parallel(matrix[i2][j2], matrix[(i1+2)%3][j1])) {
+        int i1 = pos1/matrix[0].size(), j1 = pos1 % matrix[0].size(); // na podst. pozycji ustala indeksy macierzy
+        int i2 = pos2/matrix[0].size(), j2 = pos2 % matrix[0].size();
 
-        swap(matrix[i1][j1], matrix[i2][j2]); // mozna je zamienic
-    }
-    else {  /* w przeciwnym wypadku zamieniaja sie cale "kolumny", czyli wylosowane wezly
-            i te, ktore z nimi nadaja jednoczesnie */
-        swap(matrix[i1][j1], matrix[i1][j2]);
-        swap(matrix[(i1+1)%3][j1], matrix[(i1+1)%3][j2]);
-        swap(matrix[(i1+2)%3][j1], matrix[(i1+2)%3][j2]);
+        /* jesli "nowe" wezly moga nadawac jednoczesnie z wezlami,
+           ktore do tej pory nadawaly ze "starymi" wezlami */
+        if (can_parallel(matrix[i1][j1], matrix[(i2+1)%3][j2]) and
+                can_parallel(matrix[i1][j1], matrix[(i2+2)%3][j2]) and
+                can_parallel(matrix[i2][j2], matrix[(i1+1)%3][j1]) and
+                can_parallel(matrix[i2][j2], matrix[(i1+2)%3][j1])) {
+
+            swap(matrix[i1][j1], matrix[i2][j2]); // mozna je zamienic
+            break;
+        }
     }
 }
 
 int Schedule::count_delay(int path_id)
 {
     vector<Hop>::iterator itpos = find_if(hops.begin(), hops.end(), // szuka skoku o trasie path_id
-                                      [&](Hop& h){ return h.get_path_id() == path_id; });
+                                      [path_id](Hop& h){ return h.get_path_id() == path_id; });
 
     int position = itpos - hops.begin();    // pozycja (indeks) tej trasy w wektorze hops
 
-
     Path path = hops[position].get_path();  // tworzy obiekt "kopie" trasy o path_id (arg. funkcji)
+
 
     vector<vector<Hop>::iterator> it(path.get_nodes().size());  // wektor iteratorow do wektora typu int do szukania
                                                                 // pozycji wszystkich skokow na trasie path_id

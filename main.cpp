@@ -5,11 +5,6 @@
 #include <string>
 using namespace std;
 
-/*
-WYWOLANIE PROGRAMU Z LINII KOMEND: ./SimulatedAnnealing SA  <- dla algorytmu SA,
- analogicznie TA lub CS dla pozostalych algorytmow.
-Mozna tez zakomentowac warunki i odkomentowac pojedyncze wywolanie, aby uruchomic wybrany algorytm
-*/
 
 int main(int argc, char* argv[])
 {
@@ -23,7 +18,7 @@ int main(int argc, char* argv[])
 
     // simulated_annealing();
     // threshold_accepting();
-    // cuckoo_search();
+    //  cuckoo_search();
 
     return 0;
 }

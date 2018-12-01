@@ -2,5 +2,5 @@
 #include "Schedule.hpp"
 #include "TreeGeneration.hpp"
 
-int levy_flight();
+double levy_flight();
 void cuckoo_search();

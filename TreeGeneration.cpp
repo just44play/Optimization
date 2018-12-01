@@ -1,5 +1,19 @@
 #include "TreeGeneration.hpp"
 
+void results_file(int iter, int value)
+{
+    fstream file;
+    file.open("/home/dzastina/SimulatedAnnealing/ItRes.txt", ios::app);
+    if (file.good() == false) {
+        cout << "no file!";
+        exit(0);
+    }
+
+    file << iter << " " << value << endl;
+
+    file.close();
+}
+
 vector<Hop> generate_tree_from_file()
 {
     fstream file;
@@ -64,18 +78,14 @@ double random_num_real(double min, double max)
 
 vector<Hop> generate_random_tree(int number_of_nodes)
 {
-    srand(time(0));
     vector<Node> nodes;
 
-    nodes.push_back(Node(1, 0));
-
-    int id = 2;
+    int id = 1;
     int random_parent = 0;
 
-    for (int i = 1; i < number_of_nodes; i++) {
-        random_parent = random_num(nodes[i-1].get_parent(), nodes.size());
+    for (int i = 0; i < number_of_nodes; i++) {
+        random_parent = random_num(0, nodes.size());
         nodes.push_back(Node(id, random_parent));
-        cout << "id: " << id << " parent: " << nodes[i].get_parent() << endl;
         id++;
     }
 
